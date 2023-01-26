@@ -24,15 +24,15 @@ Resources:
 Resources: 
  * [XQueue](#xqueue)
  * [XNotification](#xnotification)
- * aws.TopicSubscription
- * aws.QueuePolicy
+ * aws.sns.TopicSubscription
+ * aws.sqs.QueuePolicy
 
 # EventSourceMapping
 * API: [demo-infra/compositions/event-source-mapping/definition.yaml](demo-infra/compositions/event-source-mapping/definition.yaml)
 * Composition: [demo-infra/compositions/event-source-mapping/sqs.yaml](demo-infra/compositions/event-source-mapping/sqs.yaml)
 
 Resources:
-* aws.lamnda.EventSourceMapping
+* aws.lambda.EventSourceMapping
 
 # XLambdaFunction
 * API: [demo-infra/compositions/lambda/definitions.yaml](demo-infra/compositions/lambda/definitions.yaml)
@@ -71,3 +71,56 @@ Resources:
 
 Resources:
 * aws.sns.Topic
+
+
+# Diagram
+
+```mermaid
+graph LR;
+    XServerlessApp---XFanout;
+    XServerlessApp---EventSourceMapping;
+    XServerlessApp---XLambdaFunction;
+    XServerlessApp---XObjectStorage;
+    XServerlessApp---IAMPolicies;
+
+    XFanout---XQueue;
+    XFanout---XNotification;
+    XFanout---aws.sns.TopicSubscription;
+    XFanout---aws.sqs.QueuePolicy;
+
+    EventSourceMapping---aws.lambda.EventSourceMapping
+
+    XLambdaFunction---aws.iam.Role
+    XLambdaFunction---aws.iam.RolePolicyAttachment
+    XLambdaFunction---aws.lambda.Function
+
+    XObjectStorage---aws.s3.Bucket
+
+    IAMPolicies---aws.iam.Policy
+    IAMPolicies---aws.iam.RolePolicyAttachment
+
+    XQueue---aws.sqs.Queue
+    XNotification---aws.sns.Topic
+
+    subgraph aws.ans
+      aws.sns.TopicSubscription
+      aws.sns.Topic
+    end
+    subgraph aws.sqs
+      aws.sqs.QueuePolicy
+      aws.sqs.Queue
+    end
+    subgraph aws.lambda
+      aws.lambda.EventSourceMapping
+      aws.lambda.Function
+    end
+    subgraph aws.iam
+      aws.iam.Role
+      aws.iam.RolePolicyAttachment
+      aws.iam.Policy
+    end
+    subgraph aws.s3
+      aws.s3.Bucket
+    end
+
+```
