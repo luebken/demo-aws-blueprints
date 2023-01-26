@@ -1,0 +1,6 @@
+[submodule "demo-app"]
+	path = demo-app
+	url = https://github.com/nabuskey/demo-app
+[submodule "demo-infra"]
+	path = demo-infra
+	url = https://github.com/nabuskey/demo-infra
